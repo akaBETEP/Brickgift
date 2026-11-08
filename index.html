@@ -1,6 +1,589 @@
-<html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BrickGift — LEGO-подарки 2027 · Предзаказ с оплатой ЮMoney</title>
 <style>
-   div{min-height:1em;}
+  :root{
+    --yellow:#FFCF00; --yellow-d:#e6ba00;
+    --red:#E3000B; --blue:#006DB7; --green:#00A44A;
+    --ink:#141428; --muted:#6b6b80;
+    --bg:#f6f6fb; --card:#ffffff;
+    --radius:20px; --shadow:0 10px 30px rgba(20,20,40,.1);
+    --shadow-hover:0 22px 50px rgba(20,20,40,.18);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Roboto,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+
+  /* ===== HEADER ===== */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,40,.07)}
+  .nav{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:1.3rem;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}
+  .logo-brick{width:28px;height:28px;border-radius:8px;background:var(--yellow);position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+  .logo-brick::before,.logo-brick::after{content:'';position:absolute;top:-5px;width:8px;height:8px;border-radius:3px;background:var(--yellow)}
+  .logo-brick::before{left:4px}.logo-brick::after{right:4px}.logo span{color:var(--red)}
+  .phone-link{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;color:var(--ink);padding:8px 14px;border-radius:999px;background:#f2f2f7;transition:.2s}
+  .phone-link:hover{background:var(--yellow)}
+  .cart-btn{position:relative;display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-weight:700;font-size:.9rem;margin-left:auto;transition:.2s;box-shadow:0 4px 14px rgba(20,20,40,.2)}
+  .cart-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,20,40,.3)}
+  .badge{background:var(--yellow);color:var(--ink);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.75rem;font-weight:800;padding:0 6px}
+
+  /* ===== HERO ===== */
+  .hero{position:relative;overflow:hidden;padding:60px 20px 40px}
+  .hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative;z-index:2}
+  .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,207,0,.2);border:1px solid rgba(255,207,0,.5);padding:6px 14px;border-radius:999px;font-size:.78rem;font-weight:700;margin-bottom:16px;backdrop-filter:blur(4px)}
+  .hero h1{font-size:clamp(2rem,4.8vw,3.4rem);line-height:1.08;letter-spacing:-1.6px;font-weight:800;margin-bottom:16px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{color:var(--muted);font-size:1.05rem;max-width:540px;margin-bottom:26px}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+  .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:14px 26px;border-radius:999px;font-weight:700;font-size:.95rem;transition:.2s;border:none;cursor:pointer}
+  .btn-primary{background:var(--yellow);color:var(--ink);box-shadow:0 8px 24px rgba(255,207,0,.45)}
+  .btn-primary:hover{background:var(--yellow-d);transform:translateY(-2px)}
+  .btn-green{background:#25D366;color:#fff}
+  .btn-green:hover{background:#1eb556;transform:translateY(-2px)}
+  .btn-outline{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+  .btn-outline:hover{background:var(--ink);color:#fff}
+  .hero-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:.8rem;color:var(--muted);font-weight:600}
+  .hero-trust span{display:flex;align-items:center;gap:6px}
+  .hero-art{position:relative}
+  .hero-img-wrap{border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(20,20,40,.25);transform:rotate(-1.5deg);transition:.4s}
+  .hero-img-wrap:hover{transform:rotate(0) scale(1.01)}
+  .hero-img-wrap img{width:100%;height:auto;object-fit:cover;aspect-ratio:4/3}
+  .hero-float{position:absolute;background:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 12px 30px rgba(20,20,40,.18);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:8px;animation:float 4s ease-in-out infinite}
+  .hero-float.badge-1{top:10%;left:-20px}
+  .hero-float.badge-2{bottom:8%;right:-16px;animation-delay:1.2s}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+  /* ===== URGENCY BAR ===== */
+  .urgency{max-width:1200px;margin:0 auto 30px;padding:0 20px}
+  .urgency-inner{background:linear-gradient(90deg,#fff3d6,#ffe8a3);border-radius:16px;padding:16px 22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 16px rgba(255,207,0,.25)}
+  .urgency-text{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}
+  .timer{display:flex;gap:6px}
+  .timer-box{background:var(--ink);color:#fff;padding:6px 10px;border-radius:8px;font-weight:800;font-size:.9rem;min-width:38px;text-align:center}
+  .timer-label{font-size:.65rem;display:block;font-weight:500;color:#a8a8c0}
+
+  /* ===== SECTION ===== */
+  .section{max-width:1200px;margin:0 auto;padding:10px 20px 70px}
+  .section-head{text-align:center;max-width:640px;margin:0 auto 36px}
+  .section-head h2{font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-1px;font-weight:800;margin-bottom:8px}
+  .section-head p{color:var(--muted);font-size:.98rem}
+
+  /* ===== PRODUCT GRID ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:26px}
+  .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.3s cubic-bezier(.2,.8,.2,1);position:relative}
+  .card:hover{transform:translateY(-8px);box-shadow:var(--shadow-hover)}
+  .card-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:#f2f2f7}
+  .card-img img{width:100%;height:100%;object-fit:cover;transition:.5s}
+  .card:hover .card-img img{transform:scale(1.06)}
+  .card-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);padding:5px 12px;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+  .card-badge.hit{background:var(--red);color:#fff}
+  .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .card-theme{font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+  .card-body h3{font-size:1.02rem;font-weight:800;line-height:1.3;letter-spacing:-.2px}
+  .card-meta{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+  .card-price-row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .card-price{font-size:1.35rem;font-weight:800;letter-spacing:-.6px}
+  .card-old{font-size:.8rem;color:var(--muted);text-decoration:line-through;font-weight:500;display:block;margin-top:-2px}
+  .add-btn{background:var(--yellow);color:var(--ink);border-radius:12px;padding:11px 16px;font-weight:800;font-size:.85rem;transition:.2s;white-space:nowrap;box-shadow:0 4px 12px rgba(255,207,0,.4)}
+  .add-btn:hover{background:var(--yellow-d);transform:scale(1.05);box-shadow:0 6px 18px rgba(255,207,0,.5)}
+  .add-btn:active{transform:scale(.97)}
+
+  /* ===== TRUST SECTION ===== */
+  .trust{max-width:1200px;margin:0 auto;padding:0 20px 60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+  .trust-card{background:#fff;border-radius:16px;padding:20px 18px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 4px 14px rgba(20,20,40,.06)}
+  .trust-ico{font-size:1.6rem;flex-shrink:0}
+  .trust-card h4{font-size:.88rem;font-weight:800;margin-bottom:2px}
+  .trust-card p{font-size:.78rem;color:var(--muted);line-height:1.4}
+
+  /* ===== CONTACTS ===== */
+  .contacts{max-width:1000px;margin:0 auto;background:#fff;border-radius:26px;padding:34px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr;gap:34px}
+  .contacts h2{font-size:1.6rem;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}
+  .contacts .lead{color:var(--muted);margin-bottom:20px;font-size:.93rem}
+  .contact-item{display:flex;align-items:center;gap:12px;padding:11px 0;font-size:.93rem}
+  .contact-item .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#f2f2f7;font-size:1.1rem;flex-shrink:0}
+  .contact-item a{font-weight:700}
+  .contact-item a:hover{color:var(--red)}
+  .contact-item small{display:block;color:var(--muted);font-weight:400;font-size:.76rem}
+
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px}
+  .field input,.field textarea,.field select{width:100%;padding:12px 14px;border:2px solid #e4e4ee;border-radius:12px;font-family:inherit;font-size:.9rem;background:#fff;transition:.2s;color:var(--ink)}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--yellow);background:#fffdf2}
+  .field textarea{resize:vertical;min-height:86px}
+  .field.error input,.field.error textarea{border-color:var(--red)}
+  .field .err-msg{color:var(--red);font-size:.73rem;margin-top:4px;display:none}
+  .field.error .err-msg{display:block}
+  .submit-btn{width:100%;padding:14px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;font-size:.93rem;transition:.2s}
+  .submit-btn:hover{background:#2a2a4a}
+  .submit-btn:disabled{opacity:.6;cursor:not-allowed}
+
+  /* ===== OVERLAY / DRAWER ===== */
+  .overlay{position:fixed;inset:0;background:rgba(20,20,40,.5);opacity:0;pointer-events:none;transition:.3s;z-index:90;backdrop-filter:blur(3px)}
+  .overlay.open{opacity:1;pointer-events:auto}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(430px,100%);background:#fff;z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 50px rgba(20,20,40,.2)}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{padding:20px 24px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+  .close-btn{font-size:1.6rem;color:var(--muted);padding:4px 10px;border-radius:8px;line-height:1}
+  .close-btn:hover{background:#f2f2f7}
+  .cart-items{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}
+  .cart-item{display:flex;gap:12px;align-items:center;padding-bottom:14px;border-bottom:1px solid #f2f2f7}
+  .cart-thumb{width:64px;height:64px;border-radius:14px;overflow:hidden;flex-shrink:0;background:#f2f2f7}
+  .cart-thumb img{width:100%;height:100%;object-fit:cover}
+  .cart-info{flex:1;min-width:0}
+  .cart-info h4{font-size:.86rem;font-weight:700;line-height:1.25}
+  .cart-info .ci-price{font-size:.78rem;color:var(--muted);margin-top:2px}
+  .qty{display:flex;align-items:center;gap:8px;margin-top:5px}
+  .qty button{width:26px;height:26px;border-radius:8px;background:#f2f2f7;font-weight:800;display:grid;place-items:center}
+  .qty button:hover{background:#e4e4ee}
+  .qty span{font-weight:700;font-size:.9rem;min-width:18px;text-align:center}
+  .remove-btn{color:#c9c9d6;font-size:1.2rem;padding:4px}
+  .remove-btn:hover{color:var(--red)}
+  .empty-cart{text-align:center;color:var(--muted);padding:60px 20px}
+  .empty-cart .big{font-size:3rem;display:block;margin-bottom:12px}
+  .drawer-foot{padding:20px 24px;border-top:1px solid #eee;background:#fcfcfd}
+  .total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+  .total-row span{color:var(--muted);font-weight:600}
+  .total-row strong{font-size:1.4rem;font-weight:800;letter-spacing:-.5px}
+  .checkout-btn{width:100%;background:var(--ink);color:#fff;padding:15px;border-radius:14px;font-weight:800;font-size:.98rem;transition:.2s}
+  .checkout-btn:hover{background:#2a2a4a}
+  .checkout-btn:disabled{opacity:.4;cursor:not-allowed}
+
+  /* ===== MODAL ===== */
+  .modal{position:fixed;inset:0;z-index:110;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:.25s}
+  .modal.open{opacity:1;pointer-events:auto}
+  .modal-card{background:#fff;border-radius:24px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 30px 90px rgba(20,20,40,.35);transform:scale(.95);transition:.25s;position:relative}
+  .modal.open .modal-card{transform:scale(1)}
+  .modal-head{padding:22px 26px 8px;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid #f2f2f7}
+  .modal-head h3{font-size:1.25rem;font-weight:800;letter-spacing:-.4px}
+  .modal-head p{color:var(--muted);font-size:.83rem;margin-top:4px}
+  .modal-body{padding:16px 26px 26px}
+  .modal-close{position:absolute;top:14px;right:14px;background:#f2f2f7;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:1.2rem;color:var(--ink);z-index:3}
+  .modal-close:hover{background:#e4e4ee}
+
+  .order-summary{background:#f8f8fc;border-radius:14px;padding:14px 16px;margin-bottom:18px}
+  .order-summary .row{display:flex;justify-content:space-between;font-size:.84rem;padding:3px 0}
+  .order-summary .row.total{font-weight:800;font-size:.96rem;border-top:1px dashed #d8d8e0;margin-top:6px;padding-top:8px}
+  .radio-group{display:grid;gap:8px;margin-top:4px}
+  .radio-card{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid #e4e4ee;border-radius:12px;cursor:pointer;transition:.2s;font-size:.86rem}
+  .radio-card:hover{border-color:#d0d0dc}
+  .radio-card input{accent-color:var(--ink);margin:0}
+  .radio-card:has(input:checked){border-color:var(--yellow);background:#fffdf2}
+
+  .success-box{text-align:center;padding:20px 10px}
+  .success-box .big-icon{font-size:4rem;margin-bottom:12px;display:block}
+  .success-box h3{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+  .success-box p{color:var(--muted);font-size:.9rem;margin-bottom:8px}
+  .order-code{background:#f2f2f7;border-radius:10px;padding:12px;font-family:monospace;font-weight:700;margin:14px 0;font-size:.9rem}
+
+  .toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,120%);background:var(--ink);color:#fff;padding:14px 24px;border-radius:999px;font-weight:600;font-size:.86rem;z-index:200;transition:.35s;box-shadow:0 12px 30px rgba(20,20,40,.3);max-width:90vw;text-align:center}
+  .toast.show{transform:translate(-50%,0)}
+
+  footer{background:var(--ink);color:#fff;margin-top:50px;padding:44px 20px 24px}
+  .footer-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}
+  footer h4{font-size:.93rem;margin-bottom:12px;font-weight:800}
+  footer p,footer a{color:#a8a8c0;font-size:.85rem;text-decoration:none;display:block;margin-bottom:8px;line-height:1.4}
+  footer a:hover{color:var(--yellow)}
+  .footer-bottom{border-top:1px solid #2a2a4a;margin-top:30px;padding-top:20px;text-align:center;color:#6b6b8a;font-size:.76rem;max-width:1200px;margin-left:auto;margin-right:auto}
+
+  @media(max-width:820px){
+    .hero-inner{grid-template-columns:1fr;text-align:center}
+    .hero p{margin-left:auto;margin-right:auto}
+    .hero-cta,.hero-trust{justify-content:center}
+    .hero-art{max-width:400px;margin:0 auto}
+    .hero-float{display:none}
+    .contacts{grid-template-columns:1fr;padding:24px}
+    .footer-in{grid-template-columns:1fr;gap:20px}
+    .phone-link .txt{display:none}
+    .urgency-inner{justify-content:center;text-align:center}
+  }
 </style>
-<body>&lt;!DOCTYPE html&gt;<br/>&lt;html lang=&quot;ru&quot;&gt;<br/>&lt;head&gt;<br/>&lt;meta charset=&quot;UTF-8&quot;&gt;<br/>&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;<br/>&lt;title&gt;BrickGift — LEGO-подарки 2027 · Предзаказ с оплатой ЮMoney&lt;/title&gt;<br/>&lt;style&gt;<br/>  :root{<br/>    --yellow:#FFCF00; --yellow-d:#e6ba00;<br/>    --red:#E3000B; --blue:#006DB7; --green:#00A44A;<br/>    --ink:#141428; --muted:#6b6b80;<br/>    --bg:#f6f6fb; --card:#ffffff;<br/>    --radius:20px; --shadow:0 10px 30px rgba(20,20,40,.1);<br/>    --shadow-hover:0 22px 50px rgba(20,20,40,.18);<br/>  }<br/>  *{box-sizing:border-box;margin:0;padding:0}<br/>  body{font-family:&#39;Segoe UI&#39;,Roboto,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}<br/>  button{font-family:inherit;cursor:pointer;border:none;background:none}<br/>  a{color:inherit;text-decoration:none}<br/>  img{display:block;max-width:100%}<br/><br/>  /* ===== HEADER ===== */<br/>  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(20,20,40,.07)}<br/>  .nav{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}<br/>  .logo{font-weight:800;font-size:1.3rem;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}<br/>  .logo-brick{width:28px;height:28px;border-radius:8px;background:var(--yellow);position:relative;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}<br/>  .logo-brick::before,.logo-brick::after{content:&#39;&#39;;position:absolute;top:-5px;width:8px;height:8px;border-radius:3px;background:var(--yellow)}<br/>  .logo-brick::before{left:4px}.logo-brick::after{right:4px}.logo span{color:var(--red)}<br/>  .phone-link{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.9rem;color:var(--ink);padding:8px 14px;border-radius:999px;background:#f2f2f7;transition:.2s}<br/>  .phone-link:hover{background:var(--yellow)}<br/>  .cart-btn{position:relative;display:flex;align-items:center;gap:8px;background:var(--ink);color:#fff;padding:10px 20px;border-radius:999px;font-weight:700;font-size:.9rem;margin-left:auto;transition:.2s;box-shadow:0 4px 14px rgba(20,20,40,.2)}<br/>  .cart-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(20,20,40,.3)}<br/>  .badge{background:var(--yellow);color:var(--ink);border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-size:.75rem;font-weight:800;padding:0 6px}<br/><br/>  /* ===== HERO ===== */<br/>  .hero{position:relative;overflow:hidden;padding:60px 20px 40px}<br/>  .hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative;z-index:2}<br/>  .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,207,0,.2);border:1px solid rgba(255,207,0,.5);padding:6px 14px;border-radius:999px;font-size:.78rem;font-weight:700;margin-bottom:16px;backdrop-filter:blur(4px)}<br/>  .hero h1{font-size:clamp(2rem,4.8vw,3.4rem);line-height:1.08;letter-spacing:-1.6px;font-weight:800;margin-bottom:16px}<br/>  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--red),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}<br/>  .hero p{color:var(--muted);font-size:1.05rem;max-width:540px;margin-bottom:26px}<br/>  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px}<br/>  .btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:14px 26px;border-radius:999px;font-weight:700;font-size:.95rem;transition:.2s;border:none;cursor:pointer}<br/>  .btn-primary{background:var(--yellow);color:var(--ink);box-shadow:0 8px 24px rgba(255,207,0,.45)}<br/>  .btn-primary:hover{background:var(--yellow-d);transform:translateY(-2px)}<br/>  .btn-green{background:#25D366;color:#fff}<br/>  .btn-green:hover{background:#1eb556;transform:translateY(-2px)}<br/>  .btn-outline{background:#fff;color:var(--ink);border:2px solid var(--ink)}<br/>  .btn-outline:hover{background:var(--ink);color:#fff}<br/>  .hero-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:.8rem;color:var(--muted);font-weight:600}<br/>  .hero-trust span{display:flex;align-items:center;gap:6px}<br/>  .hero-art{position:relative}<br/>  .hero-img-wrap{border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(20,20,40,.25);transform:rotate(-1.5deg);transition:.4s}<br/>  .hero-img-wrap:hover{transform:rotate(0) scale(1.01)}<br/>  .hero-img-wrap img{width:100%;height:auto;object-fit:cover;aspect-ratio:4/3}<br/>  .hero-float{position:absolute;background:#fff;border-radius:16px;padding:12px 16px;box-shadow:0 12px 30px rgba(20,20,40,.18);font-size:.8rem;font-weight:700;display:flex;align-items:center;gap:8px;animation:float 4s ease-in-out infinite}<br/>  .hero-float.badge-1{top:10%;left:-20px}<br/>  .hero-float.badge-2{bottom:8%;right:-16px;animation-delay:1.2s}<br/>  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}<br/><br/>  /* ===== URGENCY BAR ===== */<br/>  .urgency{max-width:1200px;margin:0 auto 30px;padding:0 20px}<br/>  .urgency-inner{background:linear-gradient(90deg,#fff3d6,#ffe8a3);border-radius:16px;padding:16px 22px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 16px rgba(255,207,0,.25)}<br/>  .urgency-text{font-weight:700;font-size:.9rem;display:flex;align-items:center;gap:8px}<br/>  .timer{display:flex;gap:6px}<br/>  .timer-box{background:var(--ink);color:#fff;padding:6px 10px;border-radius:8px;font-weight:800;font-size:.9rem;min-width:38px;text-align:center}<br/>  .timer-label{font-size:.65rem;display:block;font-weight:500;color:#a8a8c0}<br/><br/>  /* ===== SECTION ===== */<br/>  .section{max-width:1200px;margin:0 auto;padding:10px 20px 70px}<br/>  .section-head{text-align:center;max-width:640px;margin:0 auto 36px}<br/>  .section-head h2{font-size:clamp(1.6rem,3.2vw,2.3rem);letter-spacing:-1px;font-weight:800;margin-bottom:8px}<br/>  .section-head p{color:var(--muted);font-size:.98rem}<br/><br/>  /* ===== PRODUCT GRID ===== */<br/>  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:26px}<br/>  .card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.3s cubic-bezier(.2,.8,.2,1);position:relative}<br/>  .card:hover{transform:translateY(-8px);box-shadow:var(--shadow-hover)}<br/>  .card-img{position:relative;aspect-ratio:4/3;overflow:hidden;background:#f2f2f7}<br/>  .card-img img{width:100%;height:100%;object-fit:cover;transition:.5s}<br/>  .card:hover .card-img img{transform:scale(1.06)}<br/>  .card-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);padding:5px 12px;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.3px;text-transform:uppercase;color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.1)}<br/>  .card-badge.hit{background:var(--red);color:#fff}<br/>  .card-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px;flex:1}<br/>  .card-theme{font-size:.7rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}<br/>  .card-body h3{font-size:1.02rem;font-weight:800;line-height:1.3;letter-spacing:-.2px}<br/>  .card-meta{font-size:.8rem;color:var(--muted);margin-bottom:8px}<br/>  .card-price-row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}<br/>  .card-price{font-size:1.35rem;font-weight:800;letter-spacing:-.6px}<br/>  .card-old{font-size:.8rem;color:var(--muted);text-decoration:line-through;font-weight:500;display:block;margin-top:-2px}<br/>  .add-btn{background:var(--yellow);color:var(--ink);border-radius:12px;padding:11px 16px;font-weight:800;font-size:.85rem;transition:.2s;white-space:nowrap;box-shadow:0 4px 12px rgba(255,207,0,.4)}<br/>  .add-btn:hover{background:var(--yellow-d);transform:scale(1.05);box-shadow:0 6px 18px rgba(255,207,0,.5)}<br/>  .add-btn:active{transform:scale(.97)}<br/><br/>  /* ===== TRUST SECTION ===== */<br/>  .trust{max-width:1200px;margin:0 auto;padding:0 20px 60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}<br/>  .trust-card{background:#fff;border-radius:16px;padding:20px 18px;display:flex;align-items:flex-start;gap:12px;box-shadow:0 4px 14px rgba(20,20,40,.06)}<br/>  .trust-ico{font-size:1.6rem;flex-shrink:0}<br/>  .trust-card h4{font-size:.88rem;font-weight:800;margin-bottom:2px}<br/>  .trust-card p{font-size:.78rem;color:var(--muted);line-height:1.4}<br/><br/>  /* ===== CONTACTS ===== */<br/>  .contacts{max-width:1000px;margin:0 auto;background:#fff;border-radius:26px;padding:34px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 1fr;gap:34px}<br/>  .contacts h2{font-size:1.6rem;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}<br/>  .contacts .lead{color:var(--muted);margin-bottom:20px;font-size:.93rem}<br/>  .contact-item{display:flex;align-items:center;gap:12px;padding:11px 0;font-size:.93rem}<br/>  .contact-item .ico{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#f2f2f7;font-size:1.1rem;flex-shrink:0}<br/>  .contact-item a{font-weight:700}<br/>  .contact-item a:hover{color:var(--red)}<br/>  .contact-item small{display:block;color:var(--muted);font-weight:400;font-size:.76rem}<br/><br/>  .field{margin-bottom:14px}<br/>  .field label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px}<br/>  .field input,.field textarea,.field select{width:100%;padding:12px 14px;border:2px solid #e4e4ee;border-radius:12px;font-family:inherit;font-size:.9rem;background:#fff;transition:.2s;color:var(--ink)}<br/>  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--yellow);background:#fffdf2}<br/>  .field textarea{resize:vertical;min-height:86px}<br/>  .field.error input,.field.error textarea{border-color:var(--red)}<br/>  .field .err-msg{color:var(--red);font-size:.73rem;margin-top:4px;display:none}<br/>  .field.error .err-msg{display:block}<br/>  .submit-btn{width:100%;padding:14px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;font-size:.93rem;transition:.2s}<br/>  .submit-btn:hover{background:#2a2a4a}<br/>  .submit-btn:disabled{opacity:.6;cursor:not-allowed}<br/><br/>  /* ===== OVERLAY / DRAWER ===== */<br/>  .overlay{position:fixed;inset:0;background:rgba(20,20,40,.5);opacity:0;pointer-events:none;transition:.3s;z-index:90;backdrop-filter:blur(3px)}<br/>  .overlay.open{opacity:1;pointer-events:auto}<br/>  .drawer{position:fixed;top:0;right:0;height:100%;width:min(430px,100%);background:#fff;z-index:100;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 50px rgba(20,20,40,.2)}<br/>  .drawer.open{transform:translateX(0)}<br/>  .drawer-head{padding:20px 24px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}<br/>  .close-btn{font-size:1.6rem;color:var(--muted);padding:4px 10px;border-radius:8px;line-height:1}<br/>  .close-btn:hover{background:#f2f2f7}<br/>  .cart-items{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px}<br/>  .cart-item{display:flex;gap:12px;align-items:center;padding-bottom:14px;border-bottom:1px solid #f2f2f7}<br/>  .cart-thumb{width:64px;height:64px;border-radius:14px;overflow:hidden;flex-shrink:0;background:#f2f2f7}<br/>  .cart-thumb img{width:100%;height:100%;object-fit:cover}<br/>  .cart-info{flex:1;min-width:0}<br/>  .cart-info h4{font-size:.86rem;font-weight:700;line-height:1.25}<br/>  .cart-info .ci-price{font-size:.78rem;color:var(--muted);margin-top:2px}<br/>  .qty{display:flex;align-items:center;gap:8px;margin-top:5px}<br/>  .qty button{width:26px;height:26px;border-radius:8px;background:#f2f2f7;font-weight:800;display:grid;place-items:center}<br/>  .qty button:hover{background:#e4e4ee}<br/>  .qty span{font-weight:700;font-size:.9rem;min-width:18px;text-align:center}<br/>  .remove-btn{color:#c9c9d6;font-size:1.2rem;padding:4px}<br/>  .remove-btn:hover{color:var(--red)}<br/>  .empty-cart{text-align:center;color:var(--muted);padding:60px 20px}<br/>  .empty-cart .big{font-size:3rem;display:block;margin-bottom:12px}<br/>  .drawer-foot{padding:20px 24px;border-top:1px solid #eee;background:#fcfcfd}<br/>  .total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}<br/>  .total-row span{color:var(--muted);font-weight:600}<br/>  .total-row strong{font-size:1.4rem;font-weight:800;letter-spacing:-.5px}<br/>  .checkout-btn{width:100%;background:var(--ink);color:#fff;padding:15px;border-radius:14px;font-weight:800;font-size:.98rem;transition:.2s}<br/>  .checkout-btn:hover{background:#2a2a4a}<br/>  .checkout-btn:disabled{opacity:.4;cursor:not-allowed}<br/><br/>  /* ===== MODAL ===== */<br/>  .modal{position:fixed;inset:0;z-index:110;display:grid;place-items:center;padding:20px;opacity:0;pointer-events:none;transition:.25s}<br/>  .modal.open{opacity:1;pointer-events:auto}<br/>  .modal-card{background:#fff;border-radius:24px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 30px 90px rgba(20,20,40,.35);transform:scale(.95);transition:.25s;position:relative}<br/>  .modal.open .modal-card{transform:scale(1)}<br/>  .modal-head{padding:22px 26px 8px;position:sticky;top:0;background:#fff;z-index:2;border-bottom:1px solid #f2f2f7}<br/>  .modal-head h3{font-size:1.25rem;font-weight:800;letter-spacing:-.4px}<br/>  .modal-head p{color:var(--muted);font-size:.83rem;margin-top:4px}<br/>  .modal-body{padding:16px 26px 26px}<br/>  .modal-close{position:absolute;top:14px;right:14px;background:#f2f2f7;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:1.2rem;color:var(--ink);z-index:3}<br/>  .modal-close:hover{background:#e4e4ee}<br/><br/>  .order-summary{background:#f8f8fc;border-radius:14px;padding:14px 16px;margin-bottom:18px}<br/>  .order-summary .row{display:flex;justify-content:space-between;font-size:.84rem;padding:3px 0}<br/>  .order-summary .row.total{font-weight:800;font-size:.96rem;border-top:1px dashed #d8d8e0;margin-top:6px;padding-top:8px}<br/>  .radio-group{display:grid;gap:8px;margin-top:4px}<br/>  .radio-card{display:flex;align-items:center;gap:10px;padding:11px 14px;border:2px solid #e4e4ee;border-radius:12px;cursor:pointer;transition:.2s;font-size:.86rem}<br/>  .radio-card:hover{border-color:#d0d0dc}<br/>  .radio-card input{accent-color:var(--ink);margin:0}<br/>  .radio-card:has(input:checked){border-color:var(--yellow);background:#fffdf2}<br/><br/>  .success-box{text-align:center;padding:20px 10px}<br/>  .success-box .big-icon{font-size:4rem;margin-bottom:12px;display:block}<br/>  .success-box h3{font-size:1.4rem;font-weight:800;margin-bottom:8px}<br/>  .success-box p{color:var(--muted);font-size:.9rem;margin-bottom:8px}<br/>  .order-code{background:#f2f2f7;border-radius:10px;padding:12px;font-family:monospace;font-weight:700;margin:14px 0;font-size:.9rem}<br/><br/>  .toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,120%);background:var(--ink);color:#fff;padding:14px 24px;border-radius:999px;font-weight:600;font-size:.86rem;z-index:200;transition:.35s;box-shadow:0 12px 30px rgba(20,20,40,.3);max-width:90vw;text-align:center}<br/>  .toast.show{transform:translate(-50%,0)}<br/><br/>  footer{background:var(--ink);color:#fff;margin-top:50px;padding:44px 20px 24px}<br/>  .footer-in{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px}<br/>  footer h4{font-size:.93rem;margin-bottom:12px;font-weight:800}<br/>  footer p,footer a{color:#a8a8c0;font-size:.85rem;text-decoration:none;display:block;margin-bottom:8px;line-height:1.4}<br/>  footer a:hover{color:var(--yellow)}<br/>  .footer-bottom{border-top:1px solid #2a2a4a;margin-top:30px;padding-top:20px;text-align:center;color:#6b6b8a;font-size:.76rem;max-width:1200px;margin-left:auto;margin-right:auto}<br/><br/>  @media(max-width:820px){<br/>    .hero-inner{grid-template-columns:1fr;text-align:center}<br/>    .hero p{margin-left:auto;margin-right:auto}<br/>    .hero-cta,.hero-trust{justify-content:center}<br/>    .hero-art{max-width:400px;margin:0 auto}<br/>    .hero-float{display:none}<br/>    .contacts{grid-template-columns:1fr;padding:24px}<br/>    .footer-in{grid-template-columns:1fr;gap:20px}<br/>    .phone-link .txt{display:none}<br/>    .urgency-inner{justify-content:center;text-align:center}<br/>  }<br/>&lt;/style&gt;<br/>&lt;/head&gt;<br/>&lt;body&gt;<br/><br/>&lt;header&gt;<br/>  &lt;div class=&quot;nav&quot;&gt;<br/>    &lt;div class=&quot;logo&quot;&gt;&lt;div class=&quot;logo-brick&quot;&gt;&lt;/div&gt;Brick&lt;span&gt;Gift&lt;/span&gt;&lt;/div&gt;<br/>    &lt;a href=&quot;tel:+79851288237&quot; class=&quot;phone-link&quot;&gt;📞 &lt;span class=&quot;txt&quot;&gt;+7 (985) 128-82-37&lt;/span&gt;&lt;/a&gt;<br/>    &lt;button class=&quot;cart-btn&quot; id=&quot;cartBtn&quot;&gt;🛒 Корзина &lt;span class=&quot;badge&quot; id=&quot;cartBadge&quot;&gt;0&lt;/span&gt;&lt;/button&gt;<br/>  &lt;/div&gt;<br/>&lt;/header&gt;<br/><br/>&lt;section class=&quot;hero&quot;&gt;<br/>  &lt;div class=&quot;hero-inner&quot;&gt;<br/>    &lt;div&gt;<br/>      &lt;div class=&quot;hero-tag&quot;&gt;🚀 Предзаказ 2027 · Старт продаж 1 января&lt;/div&gt;<br/>      &lt;h1&gt;LEGO-подарки,&lt;br&gt;которые &lt;em&gt;запомнятся&lt;/em&gt;&lt;/h1&gt;<br/>      &lt;p&gt;Официальные наборы 2027 года. Оплата кошельком или картой через ЮMoney. Доставка по России. Гарантия подлинности.&lt;/p&gt;<br/>      &lt;div class=&quot;hero-cta&quot;&gt;<br/>        &lt;a href=&quot;#catalog&quot; class=&quot;btn btn-primary&quot;&gt;Смотреть каталог →&lt;/a&gt;<br/>        &lt;a href=&quot;https://wa.me/79851288237&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;btn btn-green&quot;&gt;💬 WhatsApp&lt;/a&gt;<br/>        &lt;a href=&quot;tel:+79851288237&quot; class=&quot;btn btn-outline&quot;&gt;📞 Позвонить&lt;/a&gt;<br/>      &lt;/div&gt;<br/>      &lt;div class=&quot;hero-trust&quot;&gt;<br/>        &lt;span&gt;✅ Официальный LEGO&lt;/span&gt;<br/>        &lt;span&gt;🚚 Доставка по РФ&lt;/span&gt;<br/>        &lt;span&gt;⭐ 4.9 / 5 (2 300+ заказов)&lt;/span&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>    &lt;div class=&quot;hero-art&quot;&gt;<br/>      &lt;div class=&quot;hero-img-wrap&quot;&gt;<br/>        &lt;img src=&quot;https://images.brickset.com/sets/images/71888-1.jpg&quot; alt=&quot;LEGO 71888 Ivo&#39;s Ninja Dojo&quot; loading=&quot;eager&quot; onerror=&quot;this.src=&#39;https://images.brickset.com/sets/images/80123-1.jpg&#39;&quot;&gt;<br/>      &lt;/div&gt;<br/>      &lt;div class=&quot;hero-float badge-1&quot;&gt;🔥 Хит предзаказов&lt;/div&gt;<br/>      &lt;div class=&quot;hero-float badge-2&quot;&gt;📦 Осталось 12 шт.&lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/>&lt;/section&gt;<br/><br/>&lt;div class=&quot;urgency&quot;&gt;<br/>  &lt;div class=&quot;urgency-inner&quot;&gt;<br/>    &lt;div class=&quot;urgency-text&quot;&gt;⏳ Предзаказ по специальной цене закончится через:&lt;/div&gt;<br/>    &lt;div class=&quot;timer&quot; id=&quot;timer&quot;&gt;<br/>      &lt;div class=&quot;timer-box&quot;&gt;&lt;span id=&quot;t-days&quot;&gt;00&lt;/span&gt;&lt;span class=&quot;timer-label&quot;&gt;дней&lt;/span&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;timer-box&quot;&gt;&lt;span id=&quot;t-hours&quot;&gt;00&lt;/span&gt;&lt;span class=&quot;timer-label&quot;&gt;часов&lt;/span&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;timer-box&quot;&gt;&lt;span id=&quot;t-mins&quot;&gt;00&lt;/span&gt;&lt;span class=&quot;timer-label&quot;&gt;минут&lt;/span&gt;&lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/>&lt;/div&gt;<br/><br/>&lt;section class=&quot;section&quot; id=&quot;catalog&quot;&gt;<br/>  &lt;div class=&quot;section-head&quot;&gt;<br/>    &lt;h2&gt;Выберите подарок&lt;/h2&gt;<br/>    &lt;p&gt;5 наборов, отобранных вручную. Цены действуют до конца предзаказа.&lt;/p&gt;<br/>  &lt;/div&gt;<br/>  &lt;div class=&quot;grid&quot; id=&quot;grid&quot;&gt;&lt;/div&gt;<br/>&lt;/section&gt;<br/><br/>&lt;section class=&quot;trust&quot;&gt;<br/>  &lt;div class=&quot;trust-card&quot;&gt;&lt;span class=&quot;trust-ico&quot;&gt;🚚&lt;/span&gt;&lt;div&gt;&lt;h4&gt;Бесплатная доставка&lt;/h4&gt;&lt;p&gt;При заказе от 15 000 ₽ по всей России&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;<br/>  &lt;div class=&quot;trust-card&quot;&gt;&lt;span class=&quot;trust-ico&quot;&gt;🛡️&lt;/span&gt;&lt;div&gt;&lt;h4&gt;Гарантия подлинности&lt;/h4&gt;&lt;p&gt;Только официальные наборы LEGO&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;<br/>  &lt;div class=&quot;trust-card&quot;&gt;&lt;span class=&quot;trust-ico&quot;&gt;💳&lt;/span&gt;&lt;div&gt;&lt;h4&gt;Безопасная оплата&lt;/h4&gt;&lt;p&gt;ЮMoney: кошелёк или карта&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;<br/>  &lt;div class=&quot;trust-card&quot;&gt;&lt;span class=&quot;trust-ico&quot;&gt;↩️&lt;/span&gt;&lt;div&gt;&lt;h4&gt;Возврат 14 дней&lt;/h4&gt;&lt;p&gt;Если набор не подошёл — вернём деньги&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;<br/>&lt;/section&gt;<br/><br/>&lt;section class=&quot;section&quot; id=&quot;contacts&quot;&gt;<br/>  &lt;div class=&quot;contacts&quot;&gt;<br/>    &lt;div&gt;<br/>      &lt;h2&gt;Свяжитесь с нами&lt;/h2&gt;<br/>      &lt;p class=&quot;lead&quot;&gt;Поможем с выбором, расскажем о наличии и доставке. Отвечаем в течение 15 минут.&lt;/p&gt;<br/>      &lt;div class=&quot;contact-item&quot;&gt;&lt;div class=&quot;ico&quot;&gt;📞&lt;/div&gt;&lt;div&gt;&lt;a href=&quot;tel:+79851288237&quot;&gt;+7 (985) 128-82-37&lt;/a&gt;&lt;small&gt;Ежедневно 10:00–21:00&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;contact-item&quot;&gt;&lt;div class=&quot;ico&quot;&gt;💬&lt;/div&gt;&lt;div&gt;&lt;a href=&quot;https://wa.me/79851288237&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;WhatsApp&lt;/a&gt;&lt;small&gt;Быстрый ответ&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;contact-item&quot;&gt;&lt;div class=&quot;ico&quot;&gt;✉️&lt;/div&gt;&lt;div&gt;&lt;a href=&quot;mailto:hello@brickgift.ru&quot;&gt;hello@brickgift.ru&lt;/a&gt;&lt;small&gt;Для оптовых заказов&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;<br/>    &lt;/div&gt;<br/>    &lt;form id=&quot;contactForm&quot; novalidate&gt;<br/>      &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Ваше имя *&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;name&quot; placeholder=&quot;Как к вам обращаться&quot; required&gt;&lt;div class=&quot;err-msg&quot;&gt;Укажите имя&lt;/div&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Телефон *&lt;/label&gt;&lt;input type=&quot;tel&quot; name=&quot;phone&quot; placeholder=&quot;+7 (___) ___-__-__&quot; required&gt;&lt;div class=&quot;err-msg&quot;&gt;Укажите телефон&lt;/div&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Сообщение&lt;/label&gt;&lt;textarea name=&quot;message&quot; placeholder=&quot;Какой набор интересует, вопросы по доставке…&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;<br/>      &lt;button type=&quot;submit&quot; class=&quot;submit-btn&quot; id=&quot;contactSubmit&quot;&gt;Отправить сообщение&lt;/button&gt;<br/>    &lt;/form&gt;<br/>  &lt;/div&gt;<br/>&lt;/section&gt;<br/><br/>&lt;div class=&quot;overlay&quot; id=&quot;overlay&quot;&gt;&lt;/div&gt;<br/><br/>&lt;aside class=&quot;drawer&quot; id=&quot;drawer&quot;&gt;<br/>  &lt;div class=&quot;drawer-head&quot;&gt;&lt;h3&gt;Корзина&lt;/h3&gt;&lt;button class=&quot;close-btn&quot; id=&quot;closeCart&quot;&gt;×&lt;/button&gt;&lt;/div&gt;<br/>  &lt;div class=&quot;cart-items&quot; id=&quot;cartItems&quot;&gt;&lt;/div&gt;<br/>  &lt;div class=&quot;drawer-foot&quot;&gt;<br/>    &lt;div class=&quot;total-row&quot;&gt;&lt;span&gt;Итого&lt;/span&gt;&lt;strong id=&quot;cartTotal&quot;&gt;0 ₽&lt;/strong&gt;&lt;/div&gt;<br/>    &lt;button class=&quot;checkout-btn&quot; id=&quot;checkoutBtn&quot; disabled&gt;Оформить заказ&lt;/button&gt;<br/>  &lt;/div&gt;<br/>&lt;/aside&gt;<br/><br/>&lt;div class=&quot;modal&quot; id=&quot;orderModal&quot;&gt;<br/>  &lt;div class=&quot;modal-card&quot;&gt;<br/>    &lt;button class=&quot;modal-close&quot; data-close&gt;×&lt;/button&gt;<br/>    &lt;div class=&quot;modal-head&quot;&gt;&lt;h3&gt;Оформление заказа&lt;/h3&gt;&lt;p&gt;Заполните данные — после этого перейдёте на защищённую оплату ЮMoney&lt;/p&gt;&lt;/div&gt;<br/>    &lt;div class=&quot;modal-body&quot;&gt;<br/>      &lt;div class=&quot;order-summary&quot; id=&quot;orderSummary&quot;&gt;&lt;/div&gt;<br/>      &lt;form id=&quot;orderForm&quot; novalidate&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Ваше имя *&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;name&quot; placeholder=&quot;Иван Иванов&quot; required&gt;&lt;div class=&quot;err-msg&quot;&gt;Укажите имя&lt;/div&gt;&lt;/div&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Телефон *&lt;/label&gt;&lt;input type=&quot;tel&quot; name=&quot;phone&quot; placeholder=&quot;+7 (985) 128-82-37&quot; required&gt;&lt;div class=&quot;err-msg&quot;&gt;Укажите телефон&lt;/div&gt;&lt;/div&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Email *&lt;/label&gt;&lt;input type=&quot;email&quot; name=&quot;email&quot; placeholder=&quot;для чека и связи&quot; required&gt;&lt;div class=&quot;err-msg&quot;&gt;Укажите корректный email&lt;/div&gt;&lt;/div&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Способ получения&lt;/label&gt;&lt;select name=&quot;delivery&quot;&gt;&lt;option&gt;СДЭК (до пункта выдачи)&lt;/option&gt;&lt;option&gt;Почта России&lt;/option&gt;&lt;option&gt;Курьер по Москве&lt;/option&gt;&lt;option&gt;Самовывоз (Москва)&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Адрес / комментарий&lt;/label&gt;&lt;textarea name=&quot;address&quot; placeholder=&quot;Город, улица, дом, квартира или пожелания к заказу&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;<br/>        &lt;div class=&quot;field&quot;&gt;&lt;label&gt;Способ оплаты&lt;/label&gt;<br/>          &lt;div class=&quot;radio-group&quot;&gt;<br/>            &lt;label class=&quot;radio-card&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;paymentType&quot; value=&quot;PC&quot; checked&gt; Кошелёк ЮMoney · комиссия 1%&lt;/label&gt;<br/>            &lt;label class=&quot;radio-card&quot;&gt;&lt;input type=&quot;radio&quot; name=&quot;paymentType&quot; value=&quot;AC&quot;&gt; Банковская карта · комиссия 3%&lt;/label&gt;<br/>          &lt;/div&gt;<br/>        &lt;/div&gt;<br/>        &lt;button type=&quot;submit&quot; class=&quot;submit-btn&quot; id=&quot;payBtn&quot;&gt;Перейти к оплате&lt;/button&gt;<br/>      &lt;/form&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/>&lt;/div&gt;<br/><br/>&lt;div class=&quot;modal&quot; id=&quot;successModal&quot;&gt;<br/>  &lt;div class=&quot;modal-card&quot; style=&quot;max-width:440px&quot;&gt;<br/>    &lt;button class=&quot;modal-close&quot; data-close&gt;×&lt;/button&gt;<br/>    &lt;div class=&quot;modal-body&quot;&gt;<br/>      &lt;div class=&quot;success-box&quot;&gt;<br/>        &lt;span class=&quot;big-icon&quot;&gt;🎉&lt;/span&gt;<br/>        &lt;h3&gt;Заказ оформлен!&lt;/h3&gt;<br/>        &lt;p&gt;Мы получили ваш заказ и свяжемся с вами для подтверждения.&lt;/p&gt;<br/>        &lt;div class=&quot;order-code&quot; id=&quot;successCode&quot;&gt;&lt;/div&gt;<br/>        &lt;p style=&quot;font-size:.8rem&quot;&gt;Если оплата не прошла — позвоните:&lt;br&gt;&lt;a href=&quot;tel:+79851288237&quot; style=&quot;font-weight:700;color:var(--ink)&quot;&gt;+7 (985) 128-82-37&lt;/a&gt;&lt;/p&gt;<br/>        &lt;a href=&quot;https://wa.me/79851288237&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot; class=&quot;btn btn-green&quot; style=&quot;width:100%;margin-top:14px&quot;&gt;💬 Написать в WhatsApp&lt;/a&gt;<br/>      &lt;/div&gt;<br/>    &lt;/div&gt;<br/>  &lt;/div&gt;<br/>&lt;/div&gt;<br/><br/>&lt;div class=&quot;toast&quot; id=&quot;toast&quot;&gt;&lt;/div&gt;<br/><br/>&lt;footer&gt;<br/>  &lt;div class=&quot;footer-in&quot;&gt;<br/>    &lt;div&gt;&lt;div class=&quot;logo&quot; style=&quot;color:#fff;margin-bottom:12px&quot;&gt;&lt;div class=&quot;logo-brick&quot;&gt;&lt;/div&gt;Brick&lt;span style=&quot;color:var(--yellow)&quot;&gt;Gift&lt;/span&gt;&lt;/div&gt;&lt;p&gt;Официальные наборы LEGO. Подбираем подарки, которые действительно радуют. Оплата через ЮMoney, доставка по России.&lt;/p&gt;&lt;/div&gt;<br/>    &lt;div&gt;&lt;h4&gt;Магазин&lt;/h4&gt;&lt;a href=&quot;#catalog&quot;&gt;Каталог&lt;/a&gt;&lt;a href=&quot;#contacts&quot;&gt;Контакты&lt;/a&gt;&lt;a href=&quot;https://wa.me/79851288237&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;WhatsApp&lt;/a&gt;&lt;/div&gt;<br/>    &lt;div&gt;&lt;h4&gt;Контакты&lt;/h4&gt;&lt;a href=&quot;tel:+79851288237&quot;&gt;📞 +7 (985) 128-82-37&lt;/a&gt;&lt;a href=&quot;mailto:hello@brickgift.ru&quot;&gt;✉️ hello@brickgift.ru&lt;/a&gt;&lt;p&gt;Москва · ежедневно 10:00–21:00&lt;/p&gt;&lt;/div&gt;<br/>  &lt;/div&gt;<br/>  &lt;div class=&quot;footer-bottom&quot;&gt;© 2027 BrickGift · LEGO® — торговая марка LEGO Group. Демо-магазин на GitHub Pages.&lt;/div&gt;<br/>&lt;/footer&gt;<br/><br/>&lt;script&gt;<br/>/* ============================================================<br/>   НАСТРОЙКИ — замените перед публикацией<br/>   ============================================================ */<br/>const RECEIVER_WALLET = &quot;41001XXXXXXXXXXXX&quot;;   // ← ваш кошелёк ЮMoney<br/>const ORDER_EMAIL     = &quot;you@example.com&quot;;     // ← email для заказов (FormSubmit)<br/>const CONTACT_EMAIL   = &quot;you@example.com&quot;;     // ← email для формы обратной связи<br/>const STORE_PHONE     = &quot;+7 (985) 128-82-37&quot;;<br/><br/>/* ============================================================<br/>   ТОВАРЫ С ИЗОБРАЖЕНИЯМИ<br/>   ============================================================ */<br/>const products = [<br/>  { id:1, name:&quot;Ivo&#39;s Ninja Dojo&quot;, theme:&quot;LEGO NINJAGO&quot;, art:&quot;71888&quot;, pieces:3495, price:38600, old:41900, img:&quot;https://images.brickset.com/sets/images/71888-1.jpg&quot;, badge:&quot;Хит&quot; },<br/>  { id:2, name:&quot;Spring Festival Voyage&quot;, theme:&quot;LEGO Spring Festival&quot;, art:&quot;80123&quot;, pieces:1520, price:13800, old:15400, img:&quot;https://images.brickset.com/sets/images/80123-1.jpg&quot;, badge:&quot;Лимит&quot; },<br/>  { id:3, name:&quot;Heartlake City Shopping Mall&quot;, theme:&quot;LEGO Friends&quot;, art:&quot;42719&quot;, pieces:843, price:13800, old:15200, img:&quot;https://images.brickset.com/sets/images/42719-1.jpg&quot;, badge:&quot;Новинка&quot; },<br/>  { id:4, name:&quot;Bowser&#39;s Rumbling Race&quot;, theme:&quot;LEGO Super Mario&quot;, art:&quot;72058&quot;, pieces:409, price:8300, old:9500, img:&quot;https://images.brickset.com/sets/images/72058-1.jpg&quot;, badge:&quot;&quot; },<br/>  { id:5, name:&quot;Wild Orchid&quot;, theme:&quot;LEGO Botanicals&quot;, art:&quot;11519&quot;, pieces:606, price:8300, old:9200, img:&quot;https://images.brickset.com/sets/images/11519-1.jpg&quot;, badge:&quot;&quot; }<br/>];<br/><br/>/* ============================================================<br/>   СОСТОЯНИЕ / УТИЛИТЫ<br/>   ============================================================ */<br/>let cart = JSON.parse(localStorage.getItem(&quot;brickgift_cart_v4&quot;)) || [];<br/>const $ = id =&gt; document.getElementById(id);<br/>const fmt = n =&gt; n.toLocaleString(&quot;ru-RU&quot;) + &quot; ₽&quot;;<br/>const genCode = () =&gt; &quot;BG-&quot; + Date.now().toString(36).toUpperCase().slice(-6) + &quot;-&quot; + Math.floor(Math.random()*900+100);<br/>function saveCart(){ localStorage.setItem(&quot;brickgift_cart_v4&quot;, JSON.stringify(cart)); }<br/>function cartCount(){ return cart.reduce((s,i)=&gt;s+i.qty,0); }<br/>function cartSum(){ return cart.reduce((s,i)=&gt;{ const p=products.find(x=&gt;x.id===i.id); return s+(p?p.price*i.qty:0); },0); }<br/><br/>/* ============================================================<br/>   РЕНДЕР КАТАЛОГА<br/>   ============================================================ */<br/>function renderGrid(){<br/>  $(&quot;grid&quot;).innerHTML = products.map(p =&gt; `<br/>    &lt;article class=&quot;card&quot;&gt;<br/>      &lt;div class=&quot;card-img&quot;&gt;<br/>        &lt;img src=&quot;${p.img}&quot; alt=&quot;${p.name}&quot; loading=&quot;lazy&quot; onerror=&quot;this.style.display=&#39;none&#39;;this.parentElement.style.background=&#39;linear-gradient(135deg,#e4e4ee,#f2f2f7)&#39;;this.parentElement.innerHTML=&#39;&lt;div style=\\&#39;display:grid;place-items:center;height:100%;font-size:3rem\\&#39;&gt;🧱&lt;/div&gt;&#39;&quot;&gt;<br/>        ${p.badge ? `&lt;span class=&quot;card-badge ${p.badge===&#39;Хит&#39;?&#39;hit&#39;:&#39;&#39;}&quot;&gt;${p.badge}&lt;/span&gt;` : &#39;&#39;}<br/>      &lt;/div&gt;<br/>      &lt;div class=&quot;card-body&quot;&gt;<br/>        &lt;div class=&quot;card-theme&quot;&gt;${p.theme}&lt;/div&gt;<br/>        &lt;h3&gt;${p.name}&lt;/h3&gt;<br/>        &lt;div class=&quot;card-meta&quot;&gt;Арт. ${p.art} · ${p.pieces.toLocaleString(&quot;ru-RU&quot;)} деталей&lt;/div&gt;<br/>        &lt;div class=&quot;card-price-row&quot;&gt;<br/>          &lt;div&gt;&lt;span class=&quot;card-price&quot;&gt;${fmt(p.price)}&lt;/span&gt;&lt;span class=&quot;card-old&quot;&gt;${fmt(p.old)}&lt;/span&gt;&lt;/div&gt;<br/>          &lt;button class=&quot;add-btn&quot; data-add=&quot;${p.id}&quot;&gt;В корзину&lt;/button&gt;<br/>        &lt;/div&gt;<br/>      &lt;/div&gt;<br/>    &lt;/article&gt;<br/>  `).join(&quot;&quot;);<br/>}<br/><br/>/* ============================================================<br/>   КОРЗИНА<br/>   ============================================================ */<br/>function addToCart(id, silent){<br/>  const item = cart.find(i=&gt;i.id===id);<br/>  if(item) item.qty++; else cart.push({id, qty:1});<br/>  saveCart(); renderCart(); updateBadge();<br/>  if(!silent) toast(&quot;Товар добавлен в корзину&quot;);<br/>}<br/>function changeQty(id, delta){<br/>  const item = cart.find(i=&gt;i.id===id); if(!item) return;<br/>  item.qty += delta;<br/>  if(item.qty &lt;= 0) cart = cart.filter(i=&gt;i.id!==id);<br/>  saveCart(); renderCart(); updateBadge();<br/>}<br/>function removeItem(id){ cart = cart.filter(i=&gt;i.id!==id); saveCart(); renderCart(); updateBadge(); }<br/>function updateBadge(){ $(&quot;cartBadge&quot;).textContent = cartCount(); }<br/><br/>function renderCart(){<br/>  const box = $(&quot;cartItems&quot;);<br/>  if(cart.length === 0){<br/>    box.innerHTML = `&lt;div class=&quot;empty-cart&quot;&gt;&lt;span class=&quot;big&quot;&gt;🛒&lt;/span&gt;Корзина пуста.&lt;br&gt;Добавьте набор из каталога&lt;/div&gt;`;<br/>    $(&quot;cartTotal&quot;).textContent = &quot;0 ₽&quot;;<br/>    $(&quot;checkoutBtn&quot;).disabled = true;<br/>    return;<br/>  }<br/>  box.innerHTML = cart.map(i=&gt;{<br/>    const p = products.find(x=&gt;x.id===i.id);<br/>    return `&lt;div class=&quot;cart-item&quot;&gt;<br/>      &lt;div class=&quot;cart-thumb&quot;&gt;&lt;img src=&quot;${p.img}&quot; alt=&quot;${p.name}&quot; onerror=&quot;this.style.display=&#39;none&#39;&quot;&gt;&lt;/div&gt;<br/>      &lt;div class=&quot;cart-info&quot;&gt;&lt;h4&gt;${p.name}&lt;/h4&gt;&lt;div class=&quot;ci-price&quot;&gt;${fmt(p.price)}&lt;/div&gt;<br/>        &lt;div class=&quot;qty&quot;&gt;&lt;button data-dec=&quot;${p.id}&quot;&gt;−&lt;/button&gt;&lt;span&gt;${i.qty}&lt;/span&gt;&lt;button data-inc=&quot;${p.id}&quot;&gt;+&lt;/button&gt;&lt;/div&gt;<br/>      &lt;/div&gt;<br/>      &lt;button class=&quot;remove-btn&quot; data-remove=&quot;${p.id}&quot;&gt;×&lt;/button&gt;<br/>    &lt;/div&gt;`;<br/>  }).join(&quot;&quot;);<br/>  $(&quot;cartTotal&quot;).textContent = fmt(cartSum());<br/>  $(&quot;checkoutBtn&quot;).disabled = false;<br/>}<br/><br/>/* ============================================================<br/>   МОДАЛКИ<br/>   ============================================================ */<br/>function openOrder(){<br/>  if(cart.length === 0) return;<br/>  $(&quot;orderSummary&quot;).innerHTML = cart.map(i=&gt;{<br/>    const p = products.find(x=&gt;x.id===i.id);<br/>    return `&lt;div class=&quot;row&quot;&gt;&lt;span&gt;${p.name} × ${i.qty}&lt;/span&gt;&lt;span&gt;${fmt(p.price*i.qty)}&lt;/span&gt;&lt;/div&gt;`;<br/>  }).join(&quot;&quot;) + `&lt;div class=&quot;row total&quot;&gt;&lt;span&gt;Итого&lt;/span&gt;&lt;span&gt;${fmt(cartSum())}&lt;/span&gt;&lt;/div&gt;`;<br/>  $(&quot;orderModal&quot;).classList.add(&quot;open&quot;);<br/>  $(&quot;overlay&quot;).classList.add(&quot;open&quot;);<br/>  $(&quot;drawer&quot;).classList.remove(&quot;open&quot;);<br/>}<br/>function closeAll(){<br/>  document.querySelectorAll(&quot;.modal&quot;).forEach(m=&gt;m.classList.remove(&quot;open&quot;));<br/>  $(&quot;drawer&quot;).classList.remove(&quot;open&quot;);<br/>  $(&quot;overlay&quot;).classList.remove(&quot;open&quot;);<br/>}<br/><br/>/* ============================================================<br/>   ВАЛИДАЦИЯ<br/>   ============================================================ */<br/>function setError(field, on){ field.classList.toggle(&quot;error&quot;, on); return !on; }<br/>function validateForm(form){<br/>  let ok = true;<br/>  form.querySelectorAll(&quot;.field&quot;).forEach(f=&gt;f.classList.remove(&quot;error&quot;));<br/>  const name = form.querySelector(&#39;[name=&quot;name&quot;]&#39;);<br/>  if(name &amp;&amp; name.value.trim().length &lt; 2){ setError(name.closest(&quot;.field&quot;), true); ok = false; }<br/>  const phone = form.querySelector(&#39;[name=&quot;phone&quot;]&#39;);<br/>  if(phone){ if(phone.value.replace(/\D/g,&quot;&quot;).length &lt; 10){ setError(phone.closest(&quot;.field&quot;), true); ok = false; } }<br/>  const email = form.querySelector(&#39;[name=&quot;email&quot;]&#39;);<br/>  if(email &amp;&amp; email.required){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){ setError(email.closest(&quot;.field&quot;), true); ok = false; } }<br/>  return ok;<br/>}<br/><br/>/* ============================================================<br/>   FORMSUBMIT<br/>   ============================================================ */<br/>async function sendViaFormSubmit(email, payload){<br/>  if(!email || email === &quot;you@example.com&quot;) return null;<br/>  try {<br/>    const res = await fetch(&quot;https://formsubmit.co/ajax/&quot; + email, {<br/>      method: &quot;POST&quot;, headers: { &quot;Content-Type&quot;: &quot;application/json&quot;, &quot;Accept&quot;: &quot;application/json&quot; }, body: JSON.stringify(payload)<br/>    });<br/>    return await res.json();<br/>  } catch(e){ console.warn(&quot;FormSubmit:&quot;, e); return null; }<br/>}<br/><br/>/* ============================================================<br/>   КОНТАКТНАЯ ФОРМА<br/>   ============================================================ */<br/>$(&quot;contactForm&quot;).addEventListener(&quot;submit&quot;, async e =&gt; {<br/>  e.preventDefault();<br/>  const form = e.target;<br/>  if(!validateForm(form)) return;<br/>  const btn = $(&quot;contactSubmit&quot;);<br/>  btn.disabled = true; btn.textContent = &quot;Отправляем…&quot;;<br/>  const resp = await sendViaFormSubmit(CONTACT_EMAIL, {<br/>    name: form.name.value.trim(), phone: form.phone.value.trim(), message: form.message.value.trim(),<br/>    _subject: &quot;🔔 Сообщение с сайта BrickGift&quot;, _template: &quot;table&quot;, _captcha: &quot;false&quot;<br/>  });<br/>  btn.disabled = false; btn.textContent = &quot;Отправить сообщение&quot;;<br/>  if(resp &amp;&amp; resp.success === &quot;true&quot;){ toast(&quot;Сообщение отправлено!&quot;); form.reset(); }<br/>  else { window.location.href = &quot;tel:+79851288237&quot;; toast(&quot;Позвоните: &quot; + STORE_PHONE); }<br/>});<br/><br/>/* ============================================================<br/>   ЗАКАЗ + ЮMONEY<br/>   ============================================================ */<br/>$(&quot;orderForm&quot;).addEventListener(&quot;submit&quot;, async e =&gt; {<br/>  e.preventDefault();<br/>  const form = e.target;<br/>  if(!validateForm(form)) return;<br/>  const code = genCode();<br/>  const paymentType = form.querySelector(&#39;[name=&quot;paymentType&quot;]:checked&#39;).value;<br/>  const data = {<br/>    order_id: code, name: form.name.value.trim(), phone: form.phone.value.trim(), email: form.email.value.trim(),<br/>    delivery: form.delivery.value, address: form.address.value.trim(), payment: paymentType === &quot;PC&quot; ? &quot;ЮMoney кошелёк&quot; : &quot;Банковская карта&quot;,<br/>    items: cart.map(i=&gt;{ const p=products.find(x=&gt;x.id===i.id); return `${p.name} × ${i.qty} = ${p.price*i.qty} ₽`; }).join(&quot;\n&quot;),<br/>    total: cartSum(), _subject: `🛒 Заказ ${code} · ${cartSum().toLocaleString(&quot;ru-RU&quot;)} ₽`, _template: &quot;table&quot;, _captcha: &quot;false&quot;<br/>  };<br/>  const payBtn = $(&quot;payBtn&quot;);<br/>  payBtn.disabled = true; payBtn.textContent = &quot;Отправляем заказ…&quot;;<br/>  sendViaFormSubmit(ORDER_EMAIL, data);<br/>  try { const orders = JSON.parse(localStorage.getItem(&quot;brickgift_orders&quot;) || &quot;[]&quot;); orders.push({...data, createdAt:new Date().toISOString()}); localStorage.setItem(&quot;brickgift_orders&quot;, JSON.stringify(orders)); } catch(e){}<br/>  const yForm = document.createElement(&quot;form&quot;);<br/>  yForm.method = &quot;POST&quot;; yForm.action = &quot;https://yoomoney.ru/quickpay/confirm.xml&quot;; yForm.target = &quot;_blank&quot;;<br/>  Object.entries({ receiver: RECEIVER_WALLET, &quot;quickpay-form&quot;: &quot;shop&quot;, targets: `Заказ ${code}`, paymentType, sum: cartSum().toFixed(2), label: code, successURL: location.href + &quot;?success=1&amp;code=&quot; + code, cps_phone: data.phone, cps_email: data.email }).forEach(([k,v])=&gt;{ const inp=document.createElement(&quot;input&quot;); inp.type=&quot;hidden&quot;; inp.name=k; inp.value=v; yForm.appendChild(inp); });<br/>  document.body.appendChild(yForm); yForm.submit(); document.body.removeChild(yForm);<br/>  $(&quot;successCode&quot;).textContent = &quot;Заказ &quot; + code;<br/>  $(&quot;orderModal&quot;).classList.remove(&quot;open&quot;); $(&quot;successModal&quot;).classList.add(&quot;open&quot;);<br/>  cart = []; saveCart(); renderCart(); updateBadge();<br/>  payBtn.disabled = false; payBtn.textContent = &quot;Перейти к оплате&quot;; form.reset();<br/>});<br/><br/>/* ============================================================<br/>   СОБЫТИЯ<br/>   ============================================================ */<br/>document.addEventListener(&quot;click&quot;, e =&gt; {<br/>  const add = e.target.closest(&quot;[data-add]&quot;); if(add){ addToCart(+add.dataset.add); return; }<br/>  const inc = e.target.closest(&quot;[data-inc]&quot;); if(inc){ changeQty(+inc.dataset.inc, 1); return; }<br/>  const dec = e.target.closest(&quot;[data-dec]&quot;); if(dec){ changeQty(+dec.dataset.dec, -1); return; }<br/>  const rem = e.target.closest(&quot;[data-remove]&quot;); if(rem){ removeItem(+rem.dataset.remove); return; }<br/>  const close = e.target.closest(&quot;[data-close]&quot;); if(close){ closeAll(); return; }<br/>});<br/>$(&quot;cartBtn&quot;).addEventListener(&quot;click&quot;, ()=&gt;{ $(&quot;drawer&quot;).classList.add(&quot;open&quot;); $(&quot;overlay&quot;).classList.add(&quot;open&quot;); });<br/>$(&quot;closeCart&quot;).addEventListener(&quot;click&quot;, closeAll);<br/>$(&quot;overlay&quot;).addEventListener(&quot;click&quot;, closeAll);<br/>$(&quot;checkoutBtn&quot;).addEventListener(&quot;click&quot;, openOrder);<br/>document.addEventListener(&quot;keydown&quot;, e =&gt; { if(e.key === &quot;Escape&quot;) closeAll(); });<br/><br/>/* ============================================================<br/>   TOAST<br/>   ============================================================ */<br/>let toastTimer;<br/>function toast(msg){<br/>  const t = $(&quot;toast&quot;); t.textContent = msg; t.classList.add(&quot;show&quot;);<br/>  clearTimeout(toastTimer); toastTimer = setTimeout(()=&gt;t.classList.remove(&quot;show&quot;), 2600);<br/>}<br/><br/>/* ============================================================<br/>   ТАЙМЕР ОБРАТНОГО ОТСЧЁТА<br/>   ============================================================ */<br/>function startTimer(){<br/>  const end = new Date(); end.setDate(end.getDate() + 3); end.setHours(23,59,59,999);<br/>  function tick(){<br/>    const diff = end - new Date();<br/>    if(diff &lt;= 0){ document.getElementById(&quot;timer&quot;).innerHTML = &quot;&lt;strong&gt;🔥 Акция завершена&lt;/strong&gt;&quot;; return; }<br/>    document.getElementById(&quot;t-days&quot;).textContent = String(Math.floor(diff/864e5)).padStart(2,&quot;0&quot;);<br/>    document.getElementById(&quot;t-hours&quot;).textContent = String(Math.floor(diff%864e5/36e5)).padStart(2,&quot;0&quot;);<br/>    document.getElementById(&quot;t-mins&quot;).textContent = String(Math.floor(diff%36e5/6e4)).padStart(2,&quot;0&quot;);<br/>    requestAnimationFrame(tick);<br/>  }<br/>  tick();<br/>}<br/><br/>/* ============================================================<br/>   СТАРТ<br/>   ============================================================ */<br/>renderGrid(); renderCart(); updateBadge(); startTimer();<br/>if(location.search.includes(&quot;success=1&quot;)){<br/>  const code = new URLSearchParams(location.search).get(&quot;code&quot;) || &quot;&quot;;<br/>  $(&quot;successCode&quot;).textContent = code ? (&quot;Заказ &quot; + code) : &quot;&quot;;<br/>  $(&quot;successModal&quot;).classList.add(&quot;open&quot;); $(&quot;overlay&quot;).classList.add(&quot;open&quot;);<br/>}<br/>&lt;/script&gt;<br/>&lt;/body&gt;<br/>&lt;/html&gt;</body>
-</html>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo"><div class="logo-brick"></div>Brick<span>Gift</span></div>
+    <a href="tel:+79851288237" class="phone-link">📞 <span class="txt">+7 (985) 128-82-37</span></a>
+    <button class="cart-btn" id="cartBtn">🛒 Корзина <span class="badge" id="cartBadge">0</span></button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">🚀 Предзаказ 2027 · Старт продаж 1 января</div>
+      <h1>LEGO-подарки,<br>которые <em>запомнятся</em></h1>
+      <p>Официальные наборы 2027 года. Оплата кошельком или картой через ЮMoney. Доставка по России. Гарантия подлинности.</p>
+      <div class="hero-cta">
+        <a href="#catalog" class="btn btn-primary">Смотреть каталог →</a>
+        <a href="https://wa.me/79851288237" target="_blank" rel="noopener" class="btn btn-green">💬 WhatsApp</a>
+        <a href="tel:+79851288237" class="btn btn-outline">📞 Позвонить</a>
+      </div>
+      <div class="hero-trust">
+        <span>✅ Официальный LEGO</span>
+        <span>🚚 Доставка по РФ</span>
+        <span>⭐ 4.9 / 5 (2 300+ заказов)</span>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-img-wrap">
+        <img src="https://images.brickset.com/sets/images/71888-1.jpg" alt="LEGO 71888 Ivo's Ninja Dojo" loading="eager" onerror="this.src='https://images.brickset.com/sets/images/80123-1.jpg'">
+      </div>
+      <div class="hero-float badge-1">🔥 Хит предзаказов</div>
+      <div class="hero-float badge-2">📦 Осталось 12 шт.</div>
+    </div>
+  </div>
+</section>
+
+<div class="urgency">
+  <div class="urgency-inner">
+    <div class="urgency-text">⏳ Предзаказ по специальной цене закончится через:</div>
+    <div class="timer" id="timer">
+      <div class="timer-box"><span id="t-days">00</span><span class="timer-label">дней</span></div>
+      <div class="timer-box"><span id="t-hours">00</span><span class="timer-label">часов</span></div>
+      <div class="timer-box"><span id="t-mins">00</span><span class="timer-label">минут</span></div>
+    </div>
+  </div>
+</div>
+
+<section class="section" id="catalog">
+  <div class="section-head">
+    <h2>Выберите подарок</h2>
+    <p>5 наборов, отобранных вручную. Цены действуют до конца предзаказа.</p>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section class="trust">
+  <div class="trust-card"><span class="trust-ico">🚚</span><div><h4>Бесплатная доставка</h4><p>При заказе от 15 000 ₽ по всей России</p></div></div>
+  <div class="trust-card"><span class="trust-ico">🛡️</span><div><h4>Гарантия подлинности</h4><p>Только официальные наборы LEGO</p></div></div>
+  <div class="trust-card"><span class="trust-ico">💳</span><div><h4>Безопасная оплата</h4><p>ЮMoney: кошелёк или карта</p></div></div>
+  <div class="trust-card"><span class="trust-ico">↩️</span><div><h4>Возврат 14 дней</h4><p>Если набор не подошёл — вернём деньги</p></div></div>
+</section>
+
+<section class="section" id="contacts">
+  <div class="contacts">
+    <div>
+      <h2>Свяжитесь с нами</h2>
+      <p class="lead">Поможем с выбором, расскажем о наличии и доставке. Отвечаем в течение 15 минут.</p>
+      <div class="contact-item"><div class="ico">📞</div><div><a href="tel:+79851288237">+7 (985) 128-82-37</a><small>Ежедневно 10:00–21:00</small></div></div>
+      <div class="contact-item"><div class="ico">💬</div><div><a href="https://wa.me/79851288237" target="_blank" rel="noopener">WhatsApp</a><small>Быстрый ответ</small></div></div>
+      <div class="contact-item"><div class="ico">✉️</div><div><a href="mailto:hello@brickgift.ru">hello@brickgift.ru</a><small>Для оптовых заказов</small></div></div>
+    </div>
+    <form id="contactForm" novalidate>
+      <div class="field"><label>Ваше имя *</label><input type="text" name="name" placeholder="Как к вам обращаться" required><div class="err-msg">Укажите имя</div></div>
+      <div class="field"><label>Телефон *</label><input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required><div class="err-msg">Укажите телефон</div></div>
+      <div class="field"><label>Сообщение</label><textarea name="message" placeholder="Какой набор интересует, вопросы по доставке…"></textarea></div>
+      <button type="submit" class="submit-btn" id="contactSubmit">Отправить сообщение</button>
+    </form>
+  </div>
+</section>
+
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer" id="drawer">
+  <div class="drawer-head"><h3>Корзина</h3><button class="close-btn" id="closeCart">×</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="drawer-foot">
+    <div class="total-row"><span>Итого</span><strong id="cartTotal">0 ₽</strong></div>
+    <button class="checkout-btn" id="checkoutBtn" disabled>Оформить заказ</button>
+  </div>
+</aside>
+
+<div class="modal" id="orderModal">
+  <div class="modal-card">
+    <button class="modal-close" data-close>×</button>
+    <div class="modal-head"><h3>Оформление заказа</h3><p>Заполните данные — после этого перейдёте на защищённую оплату ЮMoney</p></div>
+    <div class="modal-body">
+      <div class="order-summary" id="orderSummary"></div>
+      <form id="orderForm" novalidate>
+        <div class="field"><label>Ваше имя *</label><input type="text" name="name" placeholder="Иван Иванов" required><div class="err-msg">Укажите имя</div></div>
+        <div class="field"><label>Телефон *</label><input type="tel" name="phone" placeholder="+7 (985) 128-82-37" required><div class="err-msg">Укажите телефон</div></div>
+        <div class="field"><label>Email *</label><input type="email" name="email" placeholder="для чека и связи" required><div class="err-msg">Укажите корректный email</div></div>
+        <div class="field"><label>Способ получения</label><select name="delivery"><option>СДЭК (до пункта выдачи)</option><option>Почта России</option><option>Курьер по Москве</option><option>Самовывоз (Москва)</option></select></div>
+        <div class="field"><label>Адрес / комментарий</label><textarea name="address" placeholder="Город, улица, дом, квартира или пожелания к заказу"></textarea></div>
+        <div class="field"><label>Способ оплаты</label>
+          <div class="radio-group">
+            <label class="radio-card"><input type="radio" name="paymentType" value="PC" checked> Кошелёк ЮMoney · комиссия 1%</label>
+            <label class="radio-card"><input type="radio" name="paymentType" value="AC"> Банковская карта · комиссия 3%</label>
+          </div>
+        </div>
+        <button type="submit" class="submit-btn" id="payBtn">Перейти к оплате</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="successModal">
+  <div class="modal-card" style="max-width:440px">
+    <button class="modal-close" data-close>×</button>
+    <div class="modal-body">
+      <div class="success-box">
+        <span class="big-icon">🎉</span>
+        <h3>Заказ оформлен!</h3>
+        <p>Мы получили ваш заказ и свяжемся с вами для подтверждения.</p>
+        <div class="order-code" id="successCode"></div>
+        <p style="font-size:.8rem">Если оплата не прошла — позвоните:<br><a href="tel:+79851288237" style="font-weight:700;color:var(--ink)">+7 (985) 128-82-37</a></p>
+        <a href="https://wa.me/79851288237" target="_blank" rel="noopener" class="btn btn-green" style="width:100%;margin-top:14px">💬 Написать в WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="footer-in">
+    <div><div class="logo" style="color:#fff;margin-bottom:12px"><div class="logo-brick"></div>Brick<span style="color:var(--yellow)">Gift</span></div><p>Официальные наборы LEGO. Подбираем подарки, которые действительно радуют. Оплата через ЮMoney, доставка по России.</p></div>
+    <div><h4>Магазин</h4><a href="#catalog">Каталог</a><a href="#contacts">Контакты</a><a href="https://wa.me/79851288237" target="_blank" rel="noopener">WhatsApp</a></div>
+    <div><h4>Контакты</h4><a href="tel:+79851288237">📞 +7 (985) 128-82-37</a><a href="mailto:hello@brickgift.ru">✉️ hello@brickgift.ru</a><p>Москва · ежедневно 10:00–21:00</p></div>
+  </div>
+  <div class="footer-bottom">© 2027 BrickGift · LEGO® — торговая марка LEGO Group. Демо-магазин на GitHub Pages.</div>
+</footer>
+
+<script>
+/* ============================================================
+   НАСТРОЙКИ — замените перед публикацией
+   ============================================================ */
+const RECEIVER_WALLET = "41001XXXXXXXXXXXX";   // ← ваш кошелёк ЮMoney
+const ORDER_EMAIL     = "you@example.com";     // ← email для заказов (FormSubmit)
+const CONTACT_EMAIL   = "you@example.com";     // ← email для формы обратной связи
+const STORE_PHONE     = "+7 (985) 128-82-37";
+
+/* ============================================================
+   ТОВАРЫ С ИЗОБРАЖЕНИЯМИ
+   ============================================================ */
+const products = [
+  { id:1, name:"Ivo's Ninja Dojo", theme:"LEGO NINJAGO", art:"71888", pieces:3495, price:38600, old:41900, img:"https://images.brickset.com/sets/images/71888-1.jpg", badge:"Хит" },
+  { id:2, name:"Spring Festival Voyage", theme:"LEGO Spring Festival", art:"80123", pieces:1520, price:13800, old:15400, img:"https://images.brickset.com/sets/images/80123-1.jpg", badge:"Лимит" },
+  { id:3, name:"Heartlake City Shopping Mall", theme:"LEGO Friends", art:"42719", pieces:843, price:13800, old:15200, img:"https://images.brickset.com/sets/images/42719-1.jpg", badge:"Новинка" },
+  { id:4, name:"Bowser's Rumbling Race", theme:"LEGO Super Mario", art:"72058", pieces:409, price:8300, old:9500, img:"https://images.brickset.com/sets/images/72058-1.jpg", badge:"" },
+  { id:5, name:"Wild Orchid", theme:"LEGO Botanicals", art:"11519", pieces:606, price:8300, old:9200, img:"https://images.brickset.com/sets/images/11519-1.jpg", badge:"" }
+];
+
+/* ============================================================
+   СОСТОЯНИЕ / УТИЛИТЫ
+   ============================================================ */
+let cart = JSON.parse(localStorage.getItem("brickgift_cart_v4")) || [];
+const $ = id => document.getElementById(id);
+const fmt = n => n.toLocaleString("ru-RU") + " ₽";
+const genCode = () => "BG-" + Date.now().toString(36).toUpperCase().slice(-6) + "-" + Math.floor(Math.random()*900+100);
+function saveCart(){ localStorage.setItem("brickgift_cart_v4", JSON.stringify(cart)); }
+function cartCount(){ return cart.reduce((s,i)=>s+i.qty,0); }
+function cartSum(){ return cart.reduce((s,i)=>{ const p=products.find(x=>x.id===i.id); return s+(p?p.price*i.qty:0); },0); }
+
+/* ============================================================
+   РЕНДЕР КАТАЛОГА
+   ============================================================ */
+function renderGrid(){
+  $("grid").innerHTML = products.map(p => `
+    <article class="card">
+      <div class="card-img">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#e4e4ee,#f2f2f7)';this.parentElement.innerHTML='<div style=\\'display:grid;place-items:center;height:100%;font-size:3rem\\'>🧱</div>'">
+        ${p.badge ? `<span class="card-badge ${p.badge==='Хит'?'hit':''}">${p.badge}</span>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="card-theme">${p.theme}</div>
+        <h3>${p.name}</h3>
+        <div class="card-meta">Арт. ${p.art} · ${p.pieces.toLocaleString("ru-RU")} деталей</div>
+        <div class="card-price-row">
+          <div><span class="card-price">${fmt(p.price)}</span><span class="card-old">${fmt(p.old)}</span></div>
+          <button class="add-btn" data-add="${p.id}">В корзину</button>
+        </div>
+      </div>
+    </article>
+  `).join("");
+}
+
+/* ============================================================
+   КОРЗИНА
+   ============================================================ */
+function addToCart(id, silent){
+  const item = cart.find(i=>i.id===id);
+  if(item) item.qty++; else cart.push({id, qty:1});
+  saveCart(); renderCart(); updateBadge();
+  if(!silent) toast("Товар добавлен в корзину");
+}
+function changeQty(id, delta){
+  const item = cart.find(i=>i.id===id); if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) cart = cart.filter(i=>i.id!==id);
+  saveCart(); renderCart(); updateBadge();
+}
+function removeItem(id){ cart = cart.filter(i=>i.id!==id); saveCart(); renderCart(); updateBadge(); }
+function updateBadge(){ $("cartBadge").textContent = cartCount(); }
+
+function renderCart(){
+  const box = $("cartItems");
+  if(cart.length === 0){
+    box.innerHTML = `<div class="empty-cart"><span class="big">🛒</span>Корзина пуста.<br>Добавьте набор из каталога</div>`;
+    $("cartTotal").textContent = "0 ₽";
+    $("checkoutBtn").disabled = true;
+    return;
+  }
+  box.innerHTML = cart.map(i=>{
+    const p = products.find(x=>x.id===i.id);
+    return `<div class="cart-item">
+      <div class="cart-thumb"><img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'"></div>
+      <div class="cart-info"><h4>${p.name}</h4><div class="ci-price">${fmt(p.price)}</div>
+        <div class="qty"><button data-dec="${p.id}">−</button><span>${i.qty}</span><button data-inc="${p.id}">+</button></div>
+      </div>
+      <button class="remove-btn" data-remove="${p.id}">×</button>
+    </div>`;
+  }).join("");
+  $("cartTotal").textContent = fmt(cartSum());
+  $("checkoutBtn").disabled = false;
+}
+
+/* ============================================================
+   МОДАЛКИ
+   ============================================================ */
+function openOrder(){
+  if(cart.length === 0) return;
+  $("orderSummary").innerHTML = cart.map(i=>{
+    const p = products.find(x=>x.id===i.id);
+    return `<div class="row"><span>${p.name} × ${i.qty}</span><span>${fmt(p.price*i.qty)}</span></div>`;
+  }).join("") + `<div class="row total"><span>Итого</span><span>${fmt(cartSum())}</span></div>`;
+  $("orderModal").classList.add("open");
+  $("overlay").classList.add("open");
+  $("drawer").classList.remove("open");
+}
+function closeAll(){
+  document.querySelectorAll(".modal").forEach(m=>m.classList.remove("open"));
+  $("drawer").classList.remove("open");
+  $("overlay").classList.remove("open");
+}
+
+/* ============================================================
+   ВАЛИДАЦИЯ
+   ============================================================ */
+function setError(field, on){ field.classList.toggle("error", on); return !on; }
+function validateForm(form){
+  let ok = true;
+  form.querySelectorAll(".field").forEach(f=>f.classList.remove("error"));
+  const name = form.querySelector('[name="name"]');
+  if(name && name.value.trim().length < 2){ setError(name.closest(".field"), true); ok = false; }
+  const phone = form.querySelector('[name="phone"]');
+  if(phone){ if(phone.value.replace(/\D/g,"").length < 10){ setError(phone.closest(".field"), true); ok = false; } }
+  const email = form.querySelector('[name="email"]');
+  if(email && email.required){ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)){ setError(email.closest(".field"), true); ok = false; } }
+  return ok;
+}
+
+/* ============================================================
+   FORMSUBMIT
+   ============================================================ */
+async function sendViaFormSubmit(email, payload){
+  if(!email || email === "you@example.com") return null;
+  try {
+    const res = await fetch("https://formsubmit.co/ajax/" + email, {
+      method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch(e){ console.warn("FormSubmit:", e); return null; }
+}
+
+/* ============================================================
+   КОНТАКТНАЯ ФОРМА
+   ============================================================ */
+$("contactForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const form = e.target;
+  if(!validateForm(form)) return;
+  const btn = $("contactSubmit");
+  btn.disabled = true; btn.textContent = "Отправляем…";
+  const resp = await sendViaFormSubmit(CONTACT_EMAIL, {
+    name: form.name.value.trim(), phone: form.phone.value.trim(), message: form.message.value.trim(),
+    _subject: "🔔 Сообщение с сайта BrickGift", _template: "table", _captcha: "false"
+  });
+  btn.disabled = false; btn.textContent = "Отправить сообщение";
+  if(resp && resp.success === "true"){ toast("Сообщение отправлено!"); form.reset(); }
+  else { window.location.href = "tel:+79851288237"; toast("Позвоните: " + STORE_PHONE); }
+});
+
+/* ============================================================
+   ЗАКАЗ + ЮMONEY
+   ============================================================ */
+$("orderForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const form = e.target;
+  if(!validateForm(form)) return;
+  const code = genCode();
+  const paymentType = form.querySelector('[name="paymentType"]:checked').value;
+  const data = {
+    order_id: code, name: form.name.value.trim(), phone: form.phone.value.trim(), email: form.email.value.trim(),
+    delivery: form.delivery.value, address: form.address.value.trim(), payment: paymentType === "PC" ? "ЮMoney кошелёк" : "Банковская карта",
+    items: cart.map(i=>{ const p=products.find(x=>x.id===i.id); return `${p.name} × ${i.qty} = ${p.price*i.qty} ₽`; }).join("\n"),
+    total: cartSum(), _subject: `🛒 Заказ ${code} · ${cartSum().toLocaleString("ru-RU")} ₽`, _template: "table", _captcha: "false"
+  };
+  const payBtn = $("payBtn");
+  payBtn.disabled = true; payBtn.textContent = "Отправляем заказ…";
+  sendViaFormSubmit(ORDER_EMAIL, data);
+  try { const orders = JSON.parse(localStorage.getItem("brickgift_orders") || "[]"); orders.push({...data, createdAt:new Date().toISOString()}); localStorage.setItem("brickgift_orders", JSON.stringify(orders)); } catch(e){}
+  const yForm = document.createElement("form");
+  yForm.method = "POST"; yForm.action = "https://yoomoney.ru/quickpay/confirm.xml"; yForm.target = "_blank";
+  Object.entries({ receiver: RECEIVER_WALLET, "quickpay-form": "shop", targets: `Заказ ${code}`, paymentType, sum: cartSum().toFixed(2), label: code, successURL: location.href + "?success=1&code=" + code, cps_phone: data.phone, cps_email: data.email }).forEach(([k,v])=>{ const inp=document.createElement("input"); inp.type="hidden"; inp.name=k; inp.value=v; yForm.appendChild(inp); });
+  document.body.appendChild(yForm); yForm.submit(); document.body.removeChild(yForm);
+  $("successCode").textContent = "Заказ " + code;
+  $("orderModal").classList.remove("open"); $("successModal").classList.add("open");
+  cart = []; saveCart(); renderCart(); updateBadge();
+  payBtn.disabled = false; payBtn.textContent = "Перейти к оплате"; form.reset();
+});
+
+/* ============================================================
+   СОБЫТИЯ
+   ============================================================ */
+document.addEventListener("click", e => {
+  const add = e.target.closest("[data-add]"); if(add){ addToCart(+add.dataset.add); return; }
+  const inc = e.target.closest("[data-inc]"); if(inc){ changeQty(+inc.dataset.inc, 1); return; }
+  const dec = e.target.closest("[data-dec]"); if(dec){ changeQty(+dec.dataset.dec, -1); return; }
+  const rem = e.target.closest("[data-remove]"); if(rem){ removeItem(+rem.dataset.remove); return; }
+  const close = e.target.closest("[data-close]"); if(close){ closeAll(); return; }
+});
+$("cartBtn").addEventListener("click", ()=>{ $("drawer").classList.add("open"); $("overlay").classList.add("open"); });
+$("closeCart").addEventListener("click", closeAll);
+$("overlay").addEventListener("click", closeAll);
+$("checkoutBtn").addEventListener("click", openOrder);
+document.addEventListener("keydown", e => { if(e.key === "Escape") closeAll(); });
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer;
+function toast(msg){
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* ============================================================
+   ТАЙМЕР ОБРАТНОГО ОТСЧЁТА
+   ============================================================ */
+function startTimer(){
+  const end = new Date(); end.setDate(end.getDate() + 3); end.setHours(23,59,59,999);
+  function tick(){
+    const diff = end - new Date();
+    if(diff <= 0){ document.getElementById("timer").innerHTML = "<strong>🔥 Акция завершена</strong>"; return; }
+    document.getElementById("t-days").textContent = String(Math.floor(diff/864e5)).padStart(2,"0");
+    document.getElementById("t-hours").textContent = String(Math.floor(diff%864e5/36e5)).padStart(2,"0");
+    document.getElementById("t-mins").textContent = String(Math.floor(diff%36e5/6e4)).padStart(2,"0");
+    requestAnimationFrame(tick);
+  }
+  tick();
+}
+
+/* ============================================================
+   СТАРТ
+   ============================================================ */
+renderGrid(); renderCart(); updateBadge(); startTimer();
+if(location.search.includes("success=1")){
+  const code = new URLSearchParams(location.search).get("code") || "";
+  $("successCode").textContent = code ? ("Заказ " + code) : "";
+  $("successModal").classList.add("open"); $("overlay").classList.add("open");
+}
+</script>
+</body>
+   </html>
